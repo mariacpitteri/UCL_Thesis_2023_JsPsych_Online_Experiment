@@ -1,0 +1,1947 @@
+<!doctype html>
+    <html>
+    <head>
+        <title>Suspens</title>
+        <script src="jatos.js"></script>
+        <script src="jspsych/jspsych.js"></script>
+        <script src="jspsych/plugin-html-keyboard-response.js"></script>
+        <script src="jspsych/plugin-image-keyboard-response.js"></script>
+        <script src="jspsych/plugin-survey-html-form.js"></script>
+        <script src="jspsych/plugin-html-slider-response.js"></script>
+        <script src="jspsych/plugin-survey-multi-choice.js"></script>
+        <script src="jspsych/plugin-survey-likert.js"></script>
+        <script src="jspsych/plugin-external-html.js"></script>
+        <script src="jspsych/plugin-call-function.js"></script>
+        <script src="jspsych/plugin-fullscreenFR.js"></script>
+        <script src="jspsych/plugin-html-button-response.js"></script>
+        <script src="jspsych/plugin-preload.js"></script>
+        <script src="designMatrix.js"></script>
+        <script src="Instructions.js"></script>
+        <script src="consent-form-information.html"></script>
+        <link href="style.css" rel="stylesheet" type="text/css"></link>
+        <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css"></link>
+    </head>
+
+    <!-- now that the library, plug-in and css file are loaded, I need to produce some JavaScript to direct how the experiment is going to happen. -->
+    <script>
+
+        //console.log(distal_delay);
+
+
+        // Initialise JsPsych using "init" function and assign the output to the variable jsPsych.
+        /* initialize jsPsych */
+        var jsPsych = initJsPsych({
+            on_finish: () => jatos.endStudy(jsPsych.data.get().json())
+        });
+
+
+        // ***********************************************************
+        // ********** STARTING STEPS *********************************
+        // ***********************************************************
+
+        var fullscreen = {
+            type: jsPsychFullscreen,
+            message: "Appuyez sur continuer pour passer en mode plein-ecran.",
+            fullscreen_mode: true,
+            on_finish: function (data) {
+                data.fullScreen = data.success;
+                data.test_part = 'full_screen';
+            }
+        }
+
+        /*var ethicsScreen = {
+          type: jsPsychExternalHtml,
+          url: "consent-form-information.html",
+          cont_btn: "continue_btn",
+        }*/
+
+
+
+        var form_trial = {
+            type: jsPsychSurveyHtmlForm,
+            preamble: '<p> Quelques questions sur vous avant de commencer... </p>',
+            html: 'Age <input name="age" type="number" <br><br>  <input type="radio" name="genre" value="homme"> Homme<br> <input type="radio" name="genre" value="femme"> Femme<br> <input type="radio" name="genre" value="autre"> Autre<br><br> <br><br>',
+            data: { test_part: 'form' },
+            on_finish: function (data) {
+                responses = data.response;
+                uid = responses.id;
+                // uidTmp = uidTmp.concat('_');
+                // uidTmp = uidTmp.concat(Date.now());
+                //uid = uidTmp;
+                // try{
+                //   var userData = db.collection("users").doc(uid).collection("taskData").doc("userData");
+                // }
+                // catch{
+                //   document.write("Une erreur est survenu avec votre ID prolific id. Rafraîchissez la page et recommencez.");
+                // }
+                data.test_part = 'basicDemo';
+                data.age = responses.age;
+                data.gender = responses.genre;
+                data.fullScreen = jsPsych.data.get().filter({ test_part: 'full_screen' }).select('fullScreen').values;
+            },
+        };
+
+
+        // sample function that might be used to check if a subject has given
+        // consent to participate.
+        /*var check_consent = function(elem) {
+          if (document.getElementById('consent_checkbox').checked) {
+            return true;
+          }
+          else {
+            alert("Si vous souhaitez participer à cette expérience, vous devez sélectionner la case 'Je souhaite participer à cette étude'");
+            return false;
+          }
+          return false;
+        };*/
+
+
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        // /******************************************************
+        // ********** INITIALIZING VARIABLES *********************
+        // *******************************************************
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        // All jsPsych experiments are defined by a timeline -> an array that contains the set of trials we want to run in the experiment.
+
+
+        var timeline = [];
+
+
+        //Define trialsIdxTest and trialsIdx, a variable that will increase by 1 after each trial.
+
+        var trialsIdxTest = 0
+
+        var trialsIdx = 0
+
+        //Create an array with the index for the 10 sentences.
+
+        iSentence = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+        //Define sentence and sentenceList, to allow the creation of an array containing each item from iSentence 12 times.
+        //sentenceList = [0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1...]
+
+        var sentence = 0
+
+        var sentenceList = [];
+
+        for (var i = 0; i < 48; i++) { // loop 48 times (12 iterations per sentence * 4 repetitions).
+            sentence = iSentence[Math.floor(i / 12)]; // get the appropriate sentence based on the current iteration.
+            sentenceList.push(sentence); // add the current sentence to the sentenceList array.
+
+        }
+
+
+        //Display test sentences
+
+        //Display uncertainty test sentences examples
+
+
+        var testSntnc1 = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function (data) {
+                if (sentencesTest[trialsIdxTest] == 0) {
+                    html = ("<p id = 'frst'>" + testUnc[0] + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 1) {
+                    html = ("<p id = 'frst'>" + testUnc[1] + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 2) {
+                    html = ("<p id = 'frst'>" + testUnc[2] + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 3) {
+                    html = ("<p id = 'frst'>" + testUnc[3] + '</p>')
+                    return html
+                }
+
+            },
+            choices: "NO_KEYS",
+            trial_duration: 2500
+        }
+
+
+        //Repeat sentence for 3 seconds
+
+
+        var repTestSntnc1 = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function (data) {
+                if (sentencesTest[trialsIdxTest] == 0) {
+                    html = ("<p id = 'frst'>" + testUnc[0] + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 1) {
+                    html = ("<p id = 'frst'>" + testUnc[1] + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 2) {
+                    html = ("<p id = 'frst'>" + testUnc[2] + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 3) {
+                    html = ("<p id = 'frst'>" + testUnc[3] + '</p>')
+                    return html
+                }
+
+            },
+            choices: "NO_KEYS",
+            trial_duration: 1000
+        }
+
+
+        //Display test sequences
+
+        var testSequence = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function (data) {
+                if (sentencesTest[trialsIdxTest] == 0) {
+                    html = ("<p id = 'frst'>" + testUnc[0] + "</p>" + "<p id = 'scnd'>" + testRes[0]) + "</p>"
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 1) {
+                    html = ("<p id = 'frst'>" + testUnc[1] + "</p>" + "<p id = 'scnd'>" + testRes[1]) + "</p>"
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 2) {
+                    html = ("<p id = 'frst'>" + testUnc[2] + "</p>" + "<p id = 'scnd'>" + testRes[2]) + "</p>"
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 3) {
+                    html = ("<p id = 'frst'>" + testUnc[3] + "</p>" + "<p id = 'scnd'>" + testRes[3]) + "</p>"
+                    return html
+                }
+            },
+            choices: "NO_KEYS",
+            trial_duration: 3500,
+
+    
+            
+        }
+
+
+
+        var testSequenceCrs = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function (data) {
+                if (sentencesTest[trialsIdxTest] == 0) {
+                    html = ("<p id = 'frst'>" + testUnc[0] + "</p>" + "<p id = 'scnd'>" + testRes[0]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 1) {
+                    html = ("<p id = 'frst'>" + testUnc[1] + "</p>" + "<p id = 'scnd'>" + testRes[1]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 2) {
+                    html = ("<p id = 'frst'>" + testUnc[2] + "</p>" + "<p id = 'scnd'>" + testRes[2]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 3) {
+                    html = ("<p id = 'frst'>" + testUnc[3] + "</p>" + "<p id = 'scnd'>" + testRes[3]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+            },
+            choices: " ",
+
+            on_finish (data) {
+                trialsIdxTest = trialsIdxTest+1
+            }
+            
+        }
+
+        //Display sentences for experiment
+
+        //Make sure each condition can only be called 12x and each sentence within the condition can only be called once
+
+        //Get sentence from uncertainty conditions
+
+        var getfrstcond = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function (data) {
+                //chosenSentenceIdx= iSentenceIdx[conditions[trialsIdx]][sentenceList[trialsIdx]] //sentence idx
+                //chosenConditionSntnIdx=conditions[trialsIdx] //condition index
+                // I was trying to save the sentence at each iteration os I don't have to redo all the loops, but I am not convinced
+                //if chosencondition=0 return frstPartPosHghNoUnc[chosenSentence], if chosenCondition=1 return chosenSentence
+
+
+                if (conditions[trialsIdx] == 0) {
+                    return ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 1) {
+                    return ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 2) {
+                    return ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 3) {
+                    return ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 4) {
+                    return ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 5) {
+                    return ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 6) {
+                    return ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 7) {
+                    return ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 8) {
+                    return ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 9) {
+                    return ("<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 10) {
+                    return ("<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 11) {
+                    return ("<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[trialsIdx]]] + "</p>")
+
+                }
+
+            },
+            choices: "NO_KEYS",
+            trial_duration: 3500
+        }
+
+
+
+        //Show first sentence again for 3 seconds to remind viewer
+
+        var repfrstcond = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function (data) {
+                if (conditions[trialsIdx] == 0) {
+                    return ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 1) {
+                    return ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 2) {
+                    return ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 3) {
+                    return ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 4) {
+                    return ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 5) {
+                    return ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 6) {
+                    return ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 7) {
+                    return ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 8) {
+                    return ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 9) {
+                    return ("<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 10) {
+                    return ("<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[trialsIdx]]] + "</p>")
+                }
+                else if (conditions[trialsIdx] == 11) {
+                    return ("<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[trialsIdx]]] + "</p>")
+                }
+            },
+            choices: "NO_KEYS",
+            trial_duration: 1000
+        };
+
+
+        //Show whole sequence (first sentence + second sentence)
+
+
+        var getscndcond = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function (data) {
+                if (conditions[trialsIdx] == 0) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]]) + "</p>"
+                    return html
+                }
+                else if (conditions[trialsIdx] == 1) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghRes[iSentenceIdx[1][sentenceList[trialsIdx]]]) + "</p>"
+                    return html
+                }
+                else if (conditions[trialsIdx] == 2) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghNoRes[iSentenceIdx[2][sentenceList[trialsIdx]]]) + "</p>"
+                    return html
+                }
+                else if (conditions[trialsIdx] == 3) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]]) + "</p>"
+                    return html
+                }
+                else if (conditions[trialsIdx] == 4) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowRes[iSentenceIdx[4][sentenceList[trialsIdx]]]) + "</p>"
+                    return html
+                }
+                else if (conditions[trialsIdx] == 5) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowNoRes[iSentenceIdx[5][sentenceList[trialsIdx]]]) + "</p>"
+                    return html
+                }
+                else if (conditions[trialsIdx] == 6) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]]) + "</p>"
+                    return html
+                }
+                else if (conditions[trialsIdx] == 7) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghRes[iSentenceIdx[7][sentenceList[trialsIdx]]]) + "</p>"
+                    return html
+                }
+                else if (conditions[trialsIdx] == 8) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghNoRes[iSentenceIdx[8][sentenceList[trialsIdx]]]) + "</p>"
+                    return html
+                }
+                else if (conditions[trialsIdx] == 9) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]]) + "</p>"
+                    return html
+                }
+                else if (conditions[trialsIdx] == 10) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowRes[iSentenceIdx[10][sentenceList[trialsIdx]]]) + "</p>"
+                    return html
+                }
+                else if (conditions[trialsIdx] == 11) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowNoRes[iSentenceIdx[11][sentenceList[trialsIdx]]]) + "</p>"
+                    return html
+                }
+            },
+            choices: "NO_KEYS",
+            trial_duration: 3500
+        }
+
+
+
+//Crs version since there is no final rating people need to push on space bar
+        var getscndcondCrs = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function (data) {
+                if (conditions[trialsIdx] == 0) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+                else if (conditions[trialsIdx] == 1) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghRes[iSentenceIdx[1][sentenceList[trialsIdx]]]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+                else if (conditions[trialsIdx] == 2) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghNoRes[iSentenceIdx[2][sentenceList[trialsIdx]]]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+                else if (conditions[trialsIdx] == 3) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+                else if (conditions[trialsIdx] == 4) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowRes[iSentenceIdx[4][sentenceList[trialsIdx]]]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+                else if (conditions[trialsIdx] == 5) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowNoRes[iSentenceIdx[5][sentenceList[trialsIdx]]]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+                else if (conditions[trialsIdx] == 6) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+                else if (conditions[trialsIdx] == 7) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghRes[iSentenceIdx[7][sentenceList[trialsIdx]]]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+                else if (conditions[trialsIdx] == 8) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghNoRes[iSentenceIdx[8][sentenceList[trialsIdx]]]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+                else if (conditions[trialsIdx] == 9) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+                else if (conditions[trialsIdx] == 10) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowRes[iSentenceIdx[10][sentenceList[trialsIdx]]]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+                else if (conditions[trialsIdx] == 11) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowNoRes[iSentenceIdx[11][sentenceList[trialsIdx]]]) + "</p>" + "<br> <br>" + "Appuyez sur la touche espace pour avancer."
+                    return html
+                }
+            },
+            choices: " ",
+            on_finish (data) {
+                trialsIdx = trialsIdx+1
+            }
+
+        }
+
+        //Test rating sliders
+
+        //Uncertainty old definition
+
+
+        var uncOldRatingSliderTest = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (sentencesTest[trialsIdxTest] == 0) {
+                    html = ("<p id = 'frst'>" + testUnc[0] + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 1) {
+                    html = ("<p id = 'frst'>" + testUnc[1] + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 2) {
+                    html = ("<p id = 'frst'>" + testUnc[2] + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 3) {
+                    html = ("<p id = 'frst'>" + testUnc[3] + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                    return html
+                }
+            },
+            labels: ['Pas du tout', 'Moyennement', 'Beaucoup'],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            css_classes: ['sliderup'],
+            on_finish: function (data) {
+                data.test_part = 'uncOldRatingTest';
+                data.uncOldRatingTest = data.response;
+                data.uncOldRatingTestRT = data.rt;
+                data.trialsIdx = trialsIdxTest
+                data.condition = conditions[trialsIdx]
+                data.sntnIdx = sentencesTest[trialsIdxTest];
+                data.sntn = testUnc[sentencesTest[trialsIdxTest]]
+            
+            }
+
+
+        };
+
+
+
+        //Resolution rating slider test + test stimuli display )+ "</p>"+("<p id = 'scnd'>"+
+
+            var resOldRatingSliderTest = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (sentencesTest[trialsIdxTest] == 0) {
+                    html = ("<p id = 'frst'>" + testUnc[0]) + "</p>" + ("<p id = 'scnd'>" + testRes[0]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 1) {
+                    html = ("<p id = 'frst'>" + testUnc[1]) + "</p>" + ("<p id = 'scnd'>" + testRes[1]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 2) {
+                    html = ("<p id = 'frst'>" + testUnc[2]) + "</p>" + ("<p id = 'scnd'>" + testRes[2]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 3) {
+                    html = ("<p id = 'frst'>" + testUnc[3]) + "</p>" + ("<p id = 'scnd'>" + testRes[3]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?" + "<br><br>" + '</p>')
+                    return html
+                }
+            },
+            labels: ['Pas du tout', 'Moyennement', 'Beaucoup'],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            css_classes: ['sliderup'],
+            on_finish: function (data) {
+                data.test_part = 'resOldRatingTest';
+                data.resOldRatingTest = data.response;
+                data.resOldRatingTestRT = data.rt;
+                data.trialsIdx = trialsIdxTest
+                data.condition = conditions[trialsIdx]
+                data.sntnIdx = sentencesTest[trialsIdxTest];
+                data.sntn = testUnc[sentencesTest[trialsIdxTest]]
+
+                //Increase trialsIdx by one after each trial. Don't forget to remove this in overall experiment version
+                trialsIdxTest = trialsIdxTest + 1
+            }
+        };
+
+
+
+
+        //Uncertainty new definition rating slider test + test stimuli display
+
+
+        var uncRatingScenTest = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: function (data) {
+                if (sentencesTest[trialsIdxTest] == 0) {
+                    html = ("<p id = 'frst'>" + testUnc[0] + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 1) {
+                    html = ("<p id = 'frst'>" + testUnc[1] + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 2) {
+                    html = ("<p id = 'frst'>" + testUnc[2] + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 3) {
+                    html = ("<p id = 'frst'>" + testUnc[3] + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+                    return html
+                }
+            },
+            choices: ['Pas du tout', 'Moyennement', 'Beaucoup'],
+            on_finish: function (data) {
+                data.test_part = 'uncScenTest';
+                data.uncScenTest = data.response;
+                data.uncScenTestRT = data.rt;
+                data.trialsIdx = trialsIdxTest
+                data.condition = conditions[trialsIdx]
+                data.sntnIdx = sentencesTest[trialsIdxTest];
+                data.sntn = testUnc[sentencesTest[trialsIdxTest]]
+            
+            }
+
+
+        };
+
+
+        var uncRatingSliderTest = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (sentencesTest[trialsIdxTest] == 0) {
+                    html = ("<p id = 'frst'>" + testUnc[0] + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 1) {
+                    html = ("<p id = 'frst'>" + testUnc[1] + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 2) {
+                    html = ("<p id = 'frst'>" + testUnc[2] + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 3) {
+                    html = ("<p id = 'frst'>" + testUnc[3] + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                    return html
+                }
+            },
+            labels: ['Pas du tout', 'Moyennement', 'Beaucoup'],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            css_classes: ['sliderup'],
+            on_finish: function (data) {
+                data.test_part = 'uncRatingTest';
+                data.uncRatingTest = data.response;
+                data.uncRatingTestRT = data.rt;
+                data.trialsIdx = trialsIdxTest
+                data.condition = conditions[trialsIdx]
+                data.sntnIdx = sentencesTest[trialsIdxTest];
+                data.sntn = testUnc[sentencesTest[trialsIdxTest]]
+            
+            }
+
+
+        };
+
+
+        
+
+
+        //Resolution rating slider test + test stimuli display )+ "</p>"+("<p id = 'scnd'>"+
+
+        var resRatingSliderTest = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (sentencesTest[trialsIdxTest] == 0) {
+                    html = ("<p id = 'frst'>" + testUnc[0]) + "</p>" + ("<p id = 'scnd'>" + testRes[0]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 1) {
+                    html = ("<p id = 'frst'>" + testUnc[1]) + "</p>" + ("<p id = 'scnd'>" + testRes[1]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 2) {
+                    html = ("<p id = 'frst'>" + testUnc[2]) + "</p>" + ("<p id = 'scnd'>" + testRes[2]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 3) {
+                    html = ("<p id = 'frst'>" + testUnc[3]) + "</p>" + ("<p id = 'scnd'>" + testRes[3]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?" + "<br><br>" + '</p>')
+                    return html
+                }
+            },
+            labels: ['Pas du tout', 'Moyennement', 'Beaucoup'],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            css_classes: ['sliderup'],
+            on_finish: function (data) {
+                data.test_part = 'resRatingTest';
+                data.resRatingTest = data.response;
+                data.resRatingTestRT = data.rt;
+                data.trialsIdx = trialsIdxTest
+                data.condition = conditions[trialsIdx]
+                data.sntnIdx = sentencesTest[trialsIdxTest];
+                data.sntn = testUnc[sentencesTest[trialsIdxTest]]
+
+                //Increase trialsIdx by one after each trial. Don't forget to remove this in overall experiment version
+                trialsIdxTest = trialsIdxTest + 1
+            }
+        };
+
+
+
+        //Curiosity rating slider test + test stimuli display
+
+        var crsRatingSliderTest = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (sentencesTest[trialsIdxTest] == 0) {
+                    html = ("<p id = 'frst'>" + testUnc[0] + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 1) {
+                    html = ("<p id = 'frst'>" + testUnc[1] + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 2) {
+                    html = ("<p id = 'frst'>" + testUnc[2] + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 3) {
+                    html = ("<p id = 'frst'>" + testUnc[3] + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                    return html
+                }
+            },
+            labels: ['Pas du tout', 'Moyennement', 'Très'],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            css_classes: ['sliderup'],
+            on_finish: function (data) {
+                data.test_part = 'crsRatingTest';
+                data.crsRatingTest = data.response;
+                data.crsRatingTestRT = data.rt;
+                data.trialsIdx = trialsIdxTest
+                data.condition = conditions[trialsIdx]
+                data.sntnIdx = sentencesTest[trialsIdxTest];
+                data.sntn = testUnc[sentencesTest[trialsIdxTest]]
+
+            }
+        };
+
+
+
+
+        //Satisfaction rating slider test + test stimuli display
+
+        var happyRatingSliderTest = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (sentencesTest[trialsIdxTest] == 0) {
+                    html = ("<p id = 'frst'>" + testUnc[0]) + "</p>" + ("<p id = 'scnd'>" + testRes[0]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 1) {
+                    html = ("<p id = 'frst'>" + testUnc[1]) + "</p>" + ("<p id = 'scnd'>" + testRes[1]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 2) {
+                    html = ("<p id = 'frst'>" + testUnc[2]) + "</p>" + ("<p id = 'scnd'>" + testRes[2]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 3) {
+                    html = ("<p id = 'frst'>" + testUnc[3]) + "</p>" + ("<p id = 'scnd'>" + testRes[3]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?" + "<br><br>" + '</p>')
+                    return html
+                }
+            },
+            labels: ['Pas du tout', "Moyennement", 'Beaucoup'],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            css_classes: ['sliderup'],
+            on_finish: function (data) {
+                data.test_part = 'happyRatingTest';
+                data.happyRatingTest = data.response;
+                data.happyRatingTestRT = data.rt;
+                data.trialsIdx = trialsIdxTest
+                data.condition = conditions[trialsIdx]
+                data.sntnIdx = sentencesTest[trialsIdxTest];
+                data.sntn = testUnc[sentencesTest[trialsIdxTest]]
+
+                //Increase trialsIdx by one after each trial.
+                trialsIdxTest = trialsIdxTest + 1
+            }
+
+        };
+
+
+
+        var val1RatingSliderTest = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (sentencesTest[trialsIdxTest] == 0) {
+                    html = ("<p id = 'frst'>" + testUnc[0]) + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 1) {
+                    html = ("<p id = 'frst'>" + testUnc[1])  + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 2) {
+                    html = ("<p id = 'frst'>" + testUnc[2])  + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 3) {
+                    html = ("<p id = 'frst'>" + testUnc[3]) + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + "<br><br>" + '</p>')
+                    return html
+                }
+            },
+            labels: ['Négative', "Positive"],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            css_classes: ['sliderup'],
+            on_finish: function (data) {
+                data.test_part = 'val1RatingTest';
+                data.val1RatingTest = data.response;
+                data.val1RatingTestRT = data.rt;
+                data.trialsIdx = trialsIdxTest
+                data.condition = conditions[trialsIdx]
+                data.sntnIdx = sentencesTest[trialsIdxTest];
+                data.sntn = testUnc[sentencesTest[trialsIdxTest]]
+    
+            }
+
+        };
+
+
+
+        var val2RatingSliderTest = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (sentencesTest[trialsIdxTest] == 0) {
+                    html = ("<p id = 'frst'>" + testUnc[0]) + "</p>" + ("<p id = 'scnd'>" + testRes[0]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 1) {
+                    html = ("<p id = 'frst'>" + testUnc[1]) + "</p>" + ("<p id = 'scnd'>" + testRes[1]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 2) {
+                    html = ("<p id = 'frst'>" + testUnc[2]) + "</p>" + ("<p id = 'scnd'>" + testRes[2]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + "<br><br>" + '</p>')
+                    return html
+                }
+
+                else if (sentencesTest[trialsIdxTest] == 3) {
+                    html = ("<p id = 'frst'>" + testUnc[3]) + "</p>" + ("<p id = 'scnd'>" + testRes[3]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + "<br><br>" + '</p>')
+                    return html
+                }
+            },
+            labels: ['Négative', "Positive"],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            css_classes: ['sliderup'],
+            on_finish: function (data) {
+                data.test_part = 'val2RatingTest';
+                data.val2RatingTest = data.response;
+                data.val2RatingTestRT = data.rt;
+                data.trialsIdx = trialsIdxTest
+                data.condition = conditions[trialsIdx]
+                data.sntnIdx = sentencesTest[trialsIdxTest];
+                data.sntn = testUnc[sentencesTest[trialsIdxTest]]
+
+                //Increase trialsIdx by one after each trial.
+            
+                trialsIdxTest = trialsIdxTest + 1
+    
+            }
+
+        };
+
+
+
+    
+
+        //Rating sliders for experiment
+
+
+        //Uncertainty old rating slider + stimuli display
+
+        var uncOldRatingSlider = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (conditions[trialsIdx] == 0) {
+                    return ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 1) {
+                    return ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 2) {
+                    return ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 3) {
+                    return ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 4) {
+                    return ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 5) {
+                    return ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 6) {
+                    return ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 7) {
+                    return ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 8) {
+                    return ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 9) {
+                    return ("<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 10) {
+                    return ("<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 11) {
+                    return ("<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+
+                }
+            },
+            labels: ['Pas du tout', 'Moyennement', 'Beaucoup'],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            css_classes: ['sliderup'],
+            on_finish: function (data) {
+                data.test_part = 'uncOldRating';
+                data.uncOldRating = data.response;
+                data.uncOldRatingRT = data.rt;
+                data.trialsIdx = trialsIdx
+                data.condition = conditions[trialsIdx];
+                data.sntnIdx = sentenceList[trialsIdx];
+                data.sntn = iSentenceIdx[conditions[trialsIdx]][sentenceList[trialsIdx]]
+            }
+        };
+
+
+
+        //Resolution old rating slider + stimuli display
+
+        var resOldRatingSlider = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (conditions[trialsIdx] == 0) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 1) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghRes[iSentenceIdx[1][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 2) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghNoRes[iSentenceIdx[2][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 3) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 4) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowRes[iSentenceIdx[4][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 5) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowNoRes[iSentenceIdx[5][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 6) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 7) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghRes[iSentenceIdx[7][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 8) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghNoRes[iSentenceIdx[8][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 9) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 10) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowRes[iSentenceIdx[10][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 11) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowNoRes[iSentenceIdx[11][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+            },
+            labels: ['Pas du tout', 'Moyennement', 'Beaucoup'],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            on_finish: function (data) {
+                data.test_part = 'resOldRating';
+                data.resOldRating = data.response;
+                data.resOldRatingRT = data.rt;
+                data.trialsIdx = trialsIdx;
+                data.condition = conditions[trialsIdx];
+                data.sntnIdx = sentenceList[trialsIdx];
+                data.sntn = iSentenceIdx[conditions[trialsIdx]][sentenceList[trialsIdx]]
+
+                //Increase trialsIdx by one after each trial. Don't forget to remove this in overall experiment version
+                trialsIdx = trialsIdx + 1
+            }
+        };
+
+
+        //Uncertainty new rating slider + stimuli display
+
+
+        var uncRatingScen = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: function (data) {
+                if (conditions[trialsIdx] == 0) {
+                    return ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 1) {
+                    return ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 2) {
+                    return ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 3) {
+                    return ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 4) {
+                    return ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 5) {
+                    return ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 6) {
+                    return ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 7) {
+                    return ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 8) {
+                    return ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 9) {
+                    return ("<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 10) {
+                    return ("<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 11) {
+                    return ("<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "Êtes-vous capable de prévoir des scénarios à venir après avoir lu cette phrase ?<br><br>" + '</p>')
+
+                }
+            },
+            choices: ['Pas du tout', 'Moyennement', 'Beaucoup'],
+            on_finish: function (data) {
+                data.test_part = 'uncScen';
+                data.uncScen = data.response;
+                data.uncScenRT = data.rt;
+                data.trialsIdx = trialsIdx
+                data.condition = conditions[trialsIdx];
+                data.sntnIdx = sentenceList[trialsIdx];
+                data.sntn = iSentenceIdx[conditions[trialsIdx]][sentenceList[trialsIdx]]
+            }
+        };
+
+
+        var uncRatingSlider = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (conditions[trialsIdx] == 0) {
+                    return ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 1) {
+                    return ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 2) {
+                    return ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 3) {
+                    return ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 4) {
+                    return ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 5) {
+                    return ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 6) {
+                    return ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 7) {
+                    return ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 8) {
+                    return ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 9) {
+                    return ("<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 10) {
+                    return ("<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 11) {
+                    return ("<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "A quel point la phrase ci-dessus vous rend incertain(e)?<br><br>" + '</p>')
+
+                }
+            },
+            labels: ['Pas du tout', 'Moyennement', 'Beaucoup'],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            css_classes: ['sliderup'],
+            on_finish: function (data) {
+                data.test_part = 'uncRating';
+                data.uncRating = data.response;
+                data.uncRatingRT = data.rt;
+                data.trialsIdx = trialsIdx
+                data.condition = conditions[trialsIdx];
+                data.sntnIdx = sentenceList[trialsIdx];
+                data.sntn = iSentenceIdx[conditions[trialsIdx]][sentenceList[trialsIdx]]
+            }
+        };
+
+
+        //Resolution rating slider + stimuli display
+
+        var resRatingSlider = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (conditions[trialsIdx] == 0) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 1) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghRes[iSentenceIdx[1][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 2) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghNoRes[iSentenceIdx[2][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 3) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 4) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowRes[iSentenceIdx[4][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 5) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowNoRes[iSentenceIdx[5][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 6) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 7) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghRes[iSentenceIdx[7][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 8) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghNoRes[iSentenceIdx[8][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 9) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 10) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowRes[iSentenceIdx[10][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 11) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowNoRes[iSentenceIdx[11][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "À quel point la seconde phrase a réduit votre incertitude initiale?<br><br>" + '</p>')
+                    return html
+                }
+            },
+            labels: ['Pas du tout', 'Moyennement', 'Beaucoup'],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            on_finish: function (data) {
+                data.test_part = 'resRating';
+                data.resRating = data.response;
+                data.resRatingRT = data.rt;
+                data.trialsIdx = trialsIdx;
+                data.condition = conditions[trialsIdx];
+                data.sntnIdx = sentenceList[trialsIdx];
+                data.sntn = iSentenceIdx[conditions[trialsIdx]][sentenceList[trialsIdx]]
+
+                //Increase trialsIdx by one after each trial. Don't forget to remove this in overall experiment version
+                trialsIdx = trialsIdx + 1
+            }
+        };
+
+
+
+         //Curiosity rating slider + stimuli display
+
+         var crsRatingSlider = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (conditions[trialsIdx] == 0) {
+                    return ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 1) {
+                    return ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 2) {
+                    return ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 3) {
+                    return ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 4) {
+                    return ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 5) {
+                    return ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 6) {
+                    return ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 7) {
+                    return ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 8) {
+                    return ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 9) {
+                    return ("<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 10) {
+                    return ("<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+                }
+                else if (conditions[trialsIdx] == 11) {
+                    return ("<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[trialsIdx]]] + '</p>' + "<p id = 'prompt'>" + "À quel point êtes-vous curieu(x)(se) de connaître la suite? <br><br>" + '</p>')
+
+                }
+            },
+            labels: ['Pas du tout', 'Moyennement', 'Très'],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            on_finish: function (data) {
+                data.test_part = 'crsRating';
+                data.crsRating = data.response;
+                data.crsRatingRT = data.rt;
+                data.trialsIdx = trialsIdx;
+                data.condition = conditions[trialsIdx];
+                data.sntnIdx = sentenceList[trialsIdx];
+                data.sntn = iSentenceIdx[conditions[trialsIdx]][sentenceList[trialsIdx]]
+
+                //Increase trialsIdx by one after each trial. Don't forget to remove this in overall experiment version
+                //trialsIdx = trialsIdx + 1
+            }
+        };
+
+
+        //Satisfaction rating slider + stimuli display
+
+
+        var happyRatingSlider = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (conditions[trialsIdx] == 0) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + " Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 1) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghRes[iSentenceIdx[1][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + " Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 2) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghNoRes[iSentenceIdx[2][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + " Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 3) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + " Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 4) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowRes[iSentenceIdx[4][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + " Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 5) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowNoRes[iSentenceIdx[5][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + " Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 6) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + " Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 7) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghRes[iSentenceIdx[7][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + " Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 8) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghNoRes[iSentenceIdx[8][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + " Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 9) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + " Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 10) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowRes[iSentenceIdx[10][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + " Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?<br><br>" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 11) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowNoRes[iSentenceIdx[11][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + " Avez-vous apprécié cette séquence? (première phrase + deuxième phrase)?<br><br>" + '</p>')
+                    return html
+                }
+            },
+            labels: ['Pas du tout', "Moyennement", 'Beaucoup'],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            on_finish: function (data) {
+                data.test_part = 'happyRating';
+                data.happyRating = data.response;
+                data.happyRatingRT = data.rt;
+                data.trialsIdx = trialsIdx;
+                data.condition = conditions[trialsIdx];
+                data.sntnIdx = sentenceList[trialsIdx];
+                data.sntn = iSentenceIdx[conditions[trialsIdx]][sentenceList[trialsIdx]]
+
+                //Increase trialsIdx by one after each trial.
+                trialsIdx = trialsIdx + 1
+            }
+        }
+
+
+
+        var val1RatingSlider = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (conditions[trialsIdx] == 0) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]])  + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 1) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[trialsIdx]]]) + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 2) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[trialsIdx]]])  + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 3) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]]) + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 4) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[trialsIdx]]]) +  ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 5) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[trialsIdx]]]) + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 6) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]])  + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 7) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[trialsIdx]]]) + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 8) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[trialsIdx]]]) +  ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 9) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]]) + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 10) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[trialsIdx]]])  + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 11) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[trialsIdx]]])  + ("<p id = 'prompt'>" + "Cette phrase est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+            },
+            labels: ['Négative', "Positive"],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            on_finish: function (data) {
+                data.test_part = 'val1Rating';
+                data.val1Rating = data.response;
+                data.val1RatingRT = data.rt;
+                data.trialsIdx = trialsIdx;
+                data.condition = conditions[trialsIdx];
+                data.sntnIdx = sentenceList[trialsIdx];
+                data.sntn = iSentenceIdx[conditions[trialsIdx]][sentenceList[trialsIdx]]
+
+            }
+        }
+
+
+        var val2RatingSlider = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: function (data) {
+                if (conditions[trialsIdx] == 0) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghNoUnc[iSentenceIdx[0][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 1) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghRes[iSentenceIdx[1][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 2) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosHghNoRes[iSentenceIdx[2][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 3) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowNoUnc[iSentenceIdx[3][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 4) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowRes[iSentenceIdx[4][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 5) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartPosLowNoRes[iSentenceIdx[5][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 6) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghNoUnc[iSentenceIdx[6][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 7) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghRes[iSentenceIdx[7][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 8) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegHghNoRes[iSentenceIdx[8][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 9) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowNoUnc[iSentenceIdx[9][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 10) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowRes[iSentenceIdx[10][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+                else if (conditions[trialsIdx] == 11) {
+                    html = ("<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[trialsIdx]]]) + "</p>" + ("<p id = 'scnd'>" + scndPartNegLowNoRes[iSentenceIdx[11][sentenceList[trialsIdx]]]) + "</p>" + "<br><br><br>" + ("<p id = 'prompt'>" + "La phrase de résolution (en bleu) est plutôt positive ou négative?" + '</p>')
+                    return html
+                }
+            },
+            labels: ['Négative', "Positive"],
+            min: 0,
+            max: 100,
+            start: 50,
+            require_movement: true,
+            response_ends_trial: true,
+            slider_width: 600,
+            on_finish: function (data) {
+                data.test_part = 'val2Rating';
+                data.val2Rating = data.response;
+                data.val2RatingRT = data.rt;
+                data.trialsIdx = trialsIdx;
+                data.condition = conditions[trialsIdx];
+                data.sntnIdx = sentenceList[trialsIdx];
+                data.sntn = iSentenceIdx[conditions[trialsIdx]][sentenceList[trialsIdx]]
+
+                 //Increase trialsIdx by one after each trial. Don't forget to remove this in overall experiment version
+                 trialsIdx = trialsIdx + 1
+            }
+        }
+
+        //Create catch trials
+
+        //CatchSeenTrials -> Have you seen this sentence before?
+
+        //Create a variable capable of returning one sentence from the past 5 trials.
+
+        var vectorTrials = []; // Define an empty array of 
+
+        var vectorTrialsShuffled; // Define a variable without assigning a value
+
+        //Create a variable returning the sentence from selected past trial
+
+        var returnSntnc = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: function (data) {
+                var vectorTrials = [trialsIdx - 2, trialsIdx - 3, trialsIdx - 4, trialsIdx - 5];
+                var vectorTrialsShuffled = shuffle(vectorTrials);
+
+                var chosenPassedTrial = vectorTrialsShuffled[0];
+                // Use chosenPassedTrial as seen sentence to return
+
+                if (conditions[chosenPassedTrial] == 0) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghNoUnc[iSentenceIdx[0][sentenceList[chosenPassedTrial]]]) + "</p>" + '<br>' + ("<p id = 'scnd'>" + scndPartPosHghNoUnc[iSentenceIdx[0][sentenceList[chosenPassedTrial]]] + "</p>" + "<br>" + "Avez-vous déjà lu cette séquence au préalable?" + "<br>"+ "<br>")
+                    return html
+                }
+                else if (conditions[chosenPassedTrial] == 1) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc[iSentenceIdx[1][sentenceList[chosenPassedTrial]]]) + "</p>" + '<br>' + ("<p id = 'scnd'>" + scndPartPosHghRes[iSentenceIdx[1][sentenceList[chosenPassedTrial]]] + "</p>" + "<br>" + "Avez-vous déjà lu cette séquence au préalable?" + "<br>"+ "<br>")
+                    return html
+                }
+                else if (conditions[chosenPassedTrial] == 2) {
+                    html = ("<p id = 'frst'>" + frstPartPosHghUnc1[iSentenceIdx[2][sentenceList[chosenPassedTrial]]]) + "</p>" + '<br>' + ("<p id = 'scnd'>" + scndPartPosHghNoRes[iSentenceIdx[2][sentenceList[chosenPassedTrial]]] + "</p>" + "<br>" + "Avez-vous déjà lu cette séquence au préalable?" + "<br>"+ "<br>")
+                    return html
+                }
+                else if (conditions[chosenPassedTrial] == 3) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowNoUnc[iSentenceIdx[3][sentenceList[chosenPassedTrial]]]) + "</p>" + '<br>' + ("<p id = 'scnd'>" + scndPartPosLowNoUnc[iSentenceIdx[3][sentenceList[chosenPassedTrial]]] + "</p>" + "<br>" + "Avez-vous déjà lu cette séquence au préalable?" + "<br>"+ "<br>")
+                    return html
+                }
+                else if (conditions[chosenPassedTrial] == 4) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc[iSentenceIdx[4][sentenceList[chosenPassedTrial]]]) + "</p>" + '<br>' + ("<p id = 'scnd'>" + scndPartPosLowRes[iSentenceIdx[4][sentenceList[chosenPassedTrial]]] + "</p>" + "<br>" + "Avez-vous déjà lu cette séquence au préalable?" + "<br>"+ "<br>")
+                    return html
+                }
+                else if (conditions[chosenPassedTrial] == 5) {
+                    html = ("<p id = 'frst'>" + frstPartPosLowUnc1[iSentenceIdx[5][sentenceList[chosenPassedTrial]]]) + "</p>" + '<br>' + ("<p id = 'scnd'>" + scndPartPosLowNoRes[iSentenceIdx[5][sentenceList[chosenPassedTrial]]] + "</p>" + "<br>" + "Avez-vous déjà lu cette séquence au préalable?" + "<br>"+ "<br>")
+                    return html
+                }
+                else if (conditions[chosenPassedTrial] == 6) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghNoUnc[iSentenceIdx[6][sentenceList[chosenPassedTrial]]]) + "</p>" + '<br>' + ("<p id = 'scnd'>" + scndPartNegHghNoUnc[iSentenceIdx[6][sentenceList[chosenPassedTrial]]] + "</p>" + "<br>" + "Avez-vous déjà lu cette séquence au préalable?" + "<br>"+ "<br>")
+                    return html
+                }
+                else if (conditions[chosenPassedTrial] == 7) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc[iSentenceIdx[7][sentenceList[chosenPassedTrial]]]) + "</p>" + '<br>' + ("<p id = 'scnd'>" + scndPartNegHghRes[iSentenceIdx[7][sentenceList[chosenPassedTrial]]] + "</p>" + "<br>" + "Avez-vous déjà lu cette séquence au préalable?" + "<br>"+ "<br>")
+                    return html
+                }
+                else if (conditions[chosenPassedTrial] == 8) {
+                    html = ("<p id = 'frst'>" + frstPartNegHghUnc1[iSentenceIdx[8][sentenceList[chosenPassedTrial]]]) + "</p>" + '<br>' + ("<p id = 'scnd'>" + scndPartNegHghNoRes[iSentenceIdx[8][sentenceList[chosenPassedTrial]]] + "</p>" + "<br>" + "Avez-vous déjà lu cette séquence au préalable?" + "<br>"+ "<br>")
+                    return html
+                }
+                else if (conditions[chosenPassedTrial] == 9) {
+                    html = ( "<p id = 'frst'>" + frstPartNegLowNoUnc[iSentenceIdx[9][sentenceList[chosenPassedTrial]]]) + "</p>" + '<br>' + ("<p id = 'scnd'>" + scndPartNegLowNoUnc[iSentenceIdx[9][sentenceList[chosenPassedTrial]]] + "</p>" + "<br>" + "Avez-vous déjà lu cette séquence au préalable?" + "<br>"+ "<br>")
+                    return html
+                }
+                else if (conditions[chosenPassedTrial] == 10) {
+                    html = ( "<p id = 'frst'>" + frstPartNegLowUnc[iSentenceIdx[10][sentenceList[chosenPassedTrial]]]) + "</p>" + '<br>' + ("<p id = 'scnd'>" + scndPartNegLowRes[iSentenceIdx[10][sentenceList[chosenPassedTrial]]] + "</p>" + "<br>" + "Avez-vous déjà lu cette séquence au préalable?" + "<br>"+ "<br>")
+                    return html
+                }
+                else if (conditions[chosenPassedTrial] == 11) {
+                    html = ( "<p id = 'frst'>" + frstPartNegLowUnc1[iSentenceIdx[11][sentenceList[chosenPassedTrial]]]) + "</p>" + '<br>' + ("<p id = 'scnd'>" + scndPartNegLowNoRes[iSentenceIdx[11][sentenceList[chosenPassedTrial]]] + "</p>" + "<br>" + "Avez-vous déjà lu cette séquence au préalable?" + "<br>"+ "<br>")
+                    return html
+                }
+            },
+            choices: ['Oui', 'Non', 'Je ne sais pas'],
+        
+        }
+
+
+        //Display returnSntnc only if ifCatchSeenTrial is true.
+
+
+        var IfCatchSeenTrial = {
+            timeline: [returnSntnc, fixation],
+            conditional_function: function (data) {
+                if (lCatchSeen[trialsIdx] == 1) {
+                    return true; // Execute the timeline
+                } else {
+                    return false; // Skip the timeline
+                }
+            },
+            on_finish: function (data) {
+            data.test_part = 'catchSeen'
+            data.trialsIdx = trialsIdx
+            }
+        };
+
+
+
+        //CatchNewTrial -> Is this sentence new?
+
+        //Create a variable returning the new sentence
+
+        var checkNewSentence = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: function (data) {
+
+                shuffledlNewIdx = shuffle(lNewIdx) //shuffle indexes from array containing new sentences.
+
+                if (shuffledlNewIdx[0] == 0) {
+                    html = (lNew[0]+ "<br> "+"Cette séquence est-elle nouvelle?" + "<br>"+ "<br>")
+                    return html
+                }
+                else if (shuffledlNewIdx[0] == 1) {
+                    return (lNew[1]+ "<br> "+"Cette séquence est-elle nouvelle?"+ "<br>"+ "<br>")
+
+                }
+                else if (shuffledlNewIdx[0] == 2) {
+                    return (lNew[2]+ "<br> "+"Cette séquence est-elle nouvelle?"+ "<br>"+ "<br>")
+                }
+                else if (shuffledlNewIdx[0] == 3) {
+                    return (lNew[3]+ "<br> "+"Cette séquence est-elle nouvelle?"+ "<br>"+ "<br>")
+                }
+                else if (shuffledlNewIdx[0] == 4) {
+                    return (lNew[4]+ "<br> "+"Cette séquence est-elle nouvelle?"+ "<br>"+ "<br>")
+                }
+                else if (shuffledlNewIdx[0] == 5) {
+                    return (lNew[5]+ "<br> "+"Cette séquence est-elle nouvelle?"+ "<br>"+ "<br>")
+                }
+                else if (shuffledlNewIdx[0] == 6) {
+                    return (lNew[6]+ "<br> "+"Cette séquence est-elle nouvelle?"+ "<br>"+ "<br>")
+                }
+                else if (shuffledlNewIdx[0] == 7) {
+                    return (lNew[7]+ "<br> "+"Cette séquence est-elle nouvelle?"+ "<br>"+ "<br>")
+                }
+            },
+            choices: ['Oui', 'Non', 'Je ne sais pas'],
+        }
+
+
+        //Display checkNewSentence only if ifCatchNewTrial is true.
+
+        var IfCatchNewTrial = {
+            timeline: [checkNewSentence, fixation],
+            conditional_function: function (data) {
+                if (lCatchNew[trialsIdx] == 1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            on_finish: function (data) {
+            data.test_part = 'catchSeen'
+            data.trialsIdx = trialsIdx
+            }
+        }
+
+
+        //CREATE VARIABLES WITH THE DIFFERENT TIMELINES!
+
+        //OVERALL EXPERIMENT, don't forget to remove the trialsIdx+1 from each rating when doing the overall trial procedure
+
+        //Create trialProcedureTest variable, repeat it 2x
+
+        //Add instruction
+
+
+        var overallInstructions = {
+            timeline: [welcome, instruct1, instruct2, instruct3, instruct4, instruct5, fixation],
+            repetitions: 1
+        }
+
+        var trialProcedureTest = {
+            timeline: [testSntnc1, uncRatingSliderTest, crsRatingSliderTest, repTestSntnc1, testSequence, resRatingSliderTest, happyRatingSliderTest, fixation],
+            repetitions: 2
+        }
+
+        //Create a variable containg the whole trial procedure, repeat it 48x
+
+        var trialProcedure = {
+            timeline: [IfCatchSeenTrial, IfCatchNewTrial, getfrstcond, uncRatingSlider, crsRatingSlider, repfrstcond, getscndcond, resRatingSlider, happyRatingSlider, fixation],
+            repetitions: 48
+    
+        }
+
+
+
+        //UNC EXPERIMENT OLD
+
+        var overallInstructionsUncOld = {
+            timeline: [welcome, instruct1, instruct3UncOld, instruct4, instruct5, fixation],
+            repetitions: 1
+        }
+
+        var trialProcedureTestUncOld = {
+            timeline: [testSntnc1, uncOldRatingSliderTest, repTestSntnc1, testSequence, resOldRatingSliderTest, fixation],
+            repetitions: 2
+        }
+
+        var trialProcedureUncOld = {
+            timeline: [IfCatchSeenTrial, IfCatchNewTrial, getfrstcond, uncOldRatingSlider, repfrstcond, getscndcond, resOldRatingSlider, fixation],
+            repetitions: 48
+        }
+
+        //UNC EXPERIMENT NEW
+
+        //Add instruction
+
+        //Create variable with only Unc1 test rating
+
+        var overallInstructionsUnc = {
+            timeline: [welcome, instruct1, instruct2Unc, instruct3Unc, instruct4, instruct5, fixation],
+            repetitions: 1
+        }
+
+        var trialProcedureTestUnc = {
+            timeline: [testSntnc1, uncRatingScenTest, uncRatingSliderTest, repTestSntnc1, testSequence, resRatingSliderTest, fixation],
+            repetitions: 2
+        }
+
+
+        var trialProcedureUnc = {
+            timeline: [IfCatchSeenTrial, IfCatchNewTrial, getfrstcond, uncRatingScen, uncRatingSlider, repfrstcond, getscndcond, resRatingSlider, fixation],
+            repetitions: 48
+    
+        }
+
+
+
+        //CRS EXPERIMENT
+
+        //Add instruction
+
+        //Create variable with only Unc1 test rating
+
+        var overallInstructionsCrs = {
+            timeline: [welcome, instruct1, instruct2Crs, instruct3Crs, instruct4, instruct5, fixation],
+            repetitions: 1
+        }
+
+        var trialProcedureTestCrs = {
+            timeline: [testSntnc1, crsRatingSliderTest, repTestSntnc1, testSequenceCrs, fixation],
+            repetitions: 2
+        }
+
+
+        var trialProcedureCrs = {
+            timeline: [IfCatchSeenTrial, IfCatchNewTrial, getfrstcond, crsRatingSlider, repfrstcond, getscndcondCrs, fixation],
+            repetitions: 48
+    
+        }
+
+
+        //SAT EXPERIMENT
+
+        //Add instruction
+
+        var overallInstructionsSat = {
+            timeline: [welcome, instruct1, instruct2Sat, instruct3Sat, instruct4, instruct5, fixation],
+            repetitions: 1
+        }
+
+        //Create variable with only Unc1 test rating
+
+        var trialProcedureTestSat = {
+            timeline: [testSntnc1, repTestSntnc1, testSequence, happyRatingSliderTest, fixation],
+            repetitions: 2
+        }
+
+        //Create variable with only Unc1 rating
+
+        var trialProcedureSat = {
+            timeline: [IfCatchSeenTrial, IfCatchNewTrial, getfrstcond, repfrstcond, getscndcond, happyRatingSlider, fixation],
+            repetitions: 48
+    
+        }
+
+
+        //VAL EXPERIMENT
+        
+        //Add instruction
+
+        var overallInstructionsVal = {
+            timeline: [welcome, instruct1, instruct2Val, instruct3Val, instruct4, instruct5, fixation],
+            repetitions: 1
+        }
+
+        //Create variable with only Val test rating
+
+        var trialProcedureTestVal = {
+            timeline: [testSntnc1, val1RatingSliderTest, repTestSntnc1, testSequence, val2RatingSliderTest, fixation],
+            repetitions: 2
+        }
+
+        //Create variable with only Unc1 rating
+
+        var trialProcedureVal = {
+            timeline: [IfCatchSeenTrial, IfCatchNewTrial, getfrstcond, val1RatingSlider, repfrstcond, getscndcond, val2RatingSlider, fixation],
+            repetitions: 48
+    
+        }
+
+
+        var ratingSaving = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: "Appuyez sur une touche pour continuer.",
+            on_finish: function (data) {
+            
+                //Matrices used for sentence selection
+                data.iSentenceIdx0= iSentenceIdx[0],
+                data.iSentenceIdx1= iSentenceIdx[1],
+                data.iSentenceIdx2= iSentenceIdx[2],
+                data.iSentenceIdx3= iSentenceIdx[3],
+                data.iSentenceIdx4= iSentenceIdx[4],
+                data.iSentenceIdx5= iSentenceIdx[5],
+                data.iSentenceIdx6= iSentenceIdx[6],
+                data.iSentenceIdx7= iSentenceIdx[7],
+                data.iSentenceIdx8= iSentenceIdx[8],
+                data.iSentenceIdx9= iSentenceIdx[9],
+                data.iSentenceIdx10= iSentenceIdx[10],
+                data.iSentenceIdx11= iSentenceIdx[11],
+
+                //Condtions and sentence list
+                data.Conditions= conditions,
+                data.SentenceList= sentenceList
+
+                //Catch Trials
+
+                data.CatchNewTmp= lCatchNewTmp,
+                data.RandomAddtoNew= shuffledRandomAddToNew[0],
+                data.CatchNew= lCatchNew,
+
+                data.CatchSeenTmp= lCatchSeenTmp,
+                data.RandomAddtoSeen= shuffledRandomAddToSeen[0],
+                data.CatchSeen= lCatchSeen,
+                
+                //Selected Exeperiment
+
+                data.selectedExperiment=selectedExperiment
+            
+            },
+        }
+
+
+        //Push to timeline initial questionnaires
+
+        timeline.push(fullscreen, form_trial, /*ethicsScreen*/) //add check consent
+
+
+
+        // ***********************************************************
+        // ********** Push to timeline all experimental procedure ****
+        // ***********************************************************
+
+
+        experimentType = [1,2,3,4]
+
+        selectedExperiment = shuffle(experimentType)
+
+
+
+    //For curiosity experiment
+      //else if (selectedExperiment[0] == 2) {
+            //timeline.push(overallInstructionsCrs, trialProcedureTestCrs, instruct6, trialProcedureCrs);
+
+    
+    //With two uncertainty experiments (old and new definition)
+
+        if (selectedExperiment[0] == 1) {
+            timeline.push(overallInstructionsUnc, trialProcedureTestUnc, instruct6, trialProcedureUnc);
+        } else if (selectedExperiment[0] == 2) {
+            timeline.push(overallInstructionsUncOld, trialProcedureTestUncOld, instruct6, trialProcedureUncOld);
+        } else if (selectedExperiment[0] == 3) {
+            timeline.push(overallInstructionsSat, trialProcedureTestSat, instruct6, trialProcedureSat);
+        } else if (selectedExperiment[0] == 4) {
+            timeline.push(overallInstructionsVal, trialProcedureTestVal, instruct6, trialProcedureVal);
+        }
+
+        //timeline.push(overallInstructionsUncOld, trialProcedureTestUncOld, instruct6, trialProcedureUncOld )
+        
+        
+        
+        timeline.push(ratingSaving);
+
+
+        //Run the timeline
+        /* start the experiment */
+        jatos.onLoad(() => {
+            jsPsych.run(timeline);
+        });
+    </script>
+
+    </html>
